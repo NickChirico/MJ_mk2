@@ -10,6 +10,7 @@ public class zombieWall : MonoBehaviour {
 
 	public GameObject mjDeath;
 
+	public GameObject mainCamera;
 	public float wallSpeed = 0;
 	public float speedI = 0;
 
@@ -23,7 +24,7 @@ public class zombieWall : MonoBehaviour {
 		inMenu = menuControl.GetComponent<menuController> ().inMenu;
 
 		if (!inMenu) {
-			this.transform.position += Vector3.right * wallSpeed * Time.deltaTime;
+			mainCamera.transform.position += Vector3.right * wallSpeed * Time.deltaTime;
 			wallSpeed += speedI;	//*****wallspeed increases over time
 		}
 	}
