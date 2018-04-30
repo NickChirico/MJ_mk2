@@ -95,6 +95,8 @@ public class Player_Controller : MonoBehaviour
 
 	void Update ()
 	{
+		Debug.Log (onGround);
+
 		// Horizontal Walking Movement
 		UpdateMovement ();
 
@@ -366,6 +368,13 @@ public class Player_Controller : MonoBehaviour
 			jumpScript.enabled = true;
 			rb.gravityScale = startingGrav;
 		}
+
+		if (collisionInfo.gameObject.tag == "Ground")
+		{
+			onGround = false;
+
+		}
+
 	}
 
 

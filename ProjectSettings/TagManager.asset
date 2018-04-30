@@ -8,6 +8,7 @@ TagManager:
   - Enemy
   - Hitbox
   - Wall
+  - Block
   layers:
   - Default
   - TransparentFX
