@@ -6,11 +6,12 @@ using UnityEngine.SceneManagement;
 public class zombieWall : MonoBehaviour {
 
 	public GameObject menuControl;
-	bool inMenu = true;
+	public bool inMenu = true;
 
 	public GameObject mjDeath;
 
-	public GameObject mainCamera;
+	public GameObject player;
+	public GameObject wall;
 	public float wallSpeed = 0;
 	public float speedI = 0;
 
@@ -21,10 +22,12 @@ public class zombieWall : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		inMenu = menuControl.GetComponent<menuController> ().inMenu;
+		wall.transform.position = new Vector3 (wall.transform.position.x, player.transform.position.y, 9f);
+
+		//inMenu = menuControl.GetComponent<menuController> ().inMenu;
 
 		if (!inMenu) {
-			mainCamera.transform.position += Vector3.right * wallSpeed * Time.deltaTime;
+			wall.transform.position += Vector3.right * wallSpeed * Time.deltaTime;
 			wallSpeed += speedI;	//*****wallspeed increases over time
 		}
 	}
