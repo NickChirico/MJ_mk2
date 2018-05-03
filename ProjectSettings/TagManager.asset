@@ -9,6 +9,7 @@ TagManager:
   - Hitbox
   - Wall
   - Block
+  - Edge
   layers:
   - Default
   - TransparentFX

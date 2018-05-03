@@ -37,6 +37,7 @@ public class Player_Controller : MonoBehaviour
 	public float ultraSpeed; // speed during ultra
 	public int ultraExpendRate; // how many frames pass to expend 1 energy (0 is once per frame)
 	public float wallSlideSpeed; // how fast you slide down a wall (gravity)
+    public int ENEMY_DAMAGE;
 
 	public Vector2 dashRight = new Vector2 (14, 0);
 	public Vector2 dashLeft = new Vector2 (14, 0);
@@ -383,15 +384,40 @@ public class Player_Controller : MonoBehaviour
 		if (collisionInfo.gameObject.tag == "Wall")
 		{
 			onWall = true;
-			float temp = 0;
-
+			
 			jumpScript.enabled = false;
 			//rb.velocity = new Vector2 (0, 0);
 			rb.gravityScale = wallSlideSpeed;
 			//Debug.Log ("on Wall");
 
 		}
-	}
+
+        if (collisionInfo.gameObject.tag == "Enemy")
+        {
+            if (!isUltra)
+            {
+                health.CurrentValue -= ENEMY_DAMAGE;
+                StartCoroutine(TakeDamage());
+            }
+
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.tag == "Enemy")
+        {
+            if(isUltra)
+             collision.SendMessageUpwards("kill");
+        }
+    }
+
+    private IEnumerator TakeDamage()
+    {
+        sr.color = Color.red;
+        yield return new WaitForSeconds(0.25f);
+        sr.color = Color.white;
+    }
 
 	void OnCollisionExit2D (Collision2D collisionInfo)
 	{
