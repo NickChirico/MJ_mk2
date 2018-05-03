@@ -19,6 +19,7 @@ public class Player_Controller : MonoBehaviour
 	[SerializeField]
 	public Stat fuel;
 	public Stat energy;
+	public Stat health;
 
 
 	public float speedX;
@@ -59,6 +60,7 @@ public class Player_Controller : MonoBehaviour
 	private int ultraCounter;
 	private bool isUltra = false;
 	private int direction = 1; // 1 = right, -1 = left;
+	private bool isSliding = false;
 
 
 
@@ -66,6 +68,7 @@ public class Player_Controller : MonoBehaviour
 	{
 		fuel.Initialize ();
 		energy.Initialize ();
+		health.Initialize ();
 	}
 
 	void Start ()
@@ -89,14 +92,13 @@ public class Player_Controller : MonoBehaviour
 		attack1_hitbox.enabled = false;
 		fuel.CurrentValue = 0;
 		energy.CurrentValue = 0;
+		health.CurrentValue = health.MaxValue;
 		startingGrav = rb.gravityScale;
 
 	}
 
 	void Update ()
 	{
-		Debug.Log (onGround);
-
 		// Horizontal Walking Movement
 		UpdateMovement ();
 
@@ -112,7 +114,7 @@ public class Player_Controller : MonoBehaviour
 		// Check if you are able to Charge Up
 		UpdateCharging ();
 
-		// Check if you are able to cast the ultra (moonwalk)
+		// Check status of your ultra (moonwalk)
 		UpdateUltra ();
 
 	}
@@ -120,7 +122,23 @@ public class Player_Controller : MonoBehaviour
 	private void UpdateMovement ()
 	{
 		if (!isCharging)
+		{
 			moveVelocity = speed * Input.GetAxis ("Horizontal");
+			if (onGround && (moveVelocity > 0.5f || moveVelocity < -0.5f) && !isSliding && !isUltra)
+			{
+				anim.SetBool ("IsWalking", true);
+			}
+			if (onGround && (moveVelocity > 0.5f || moveVelocity < -0.5f) && !isSliding && isUltra)
+			{
+				anim.SetBool ("IsMoonWalk", true);
+			}
+			else
+			if (moveVelocity < 0.5f && moveVelocity > -0.5f)
+			{
+				anim.SetBool ("IsWalking", false);
+				anim.SetBool ("IsMoonWalk", false);
+			}
+		}
 
 		if (moveVelocity > 0)
 		{
@@ -148,6 +166,7 @@ public class Player_Controller : MonoBehaviour
 	{
 		if (!onWall && jumps > 0 && Input.GetKeyDown (KeyCode.Space))
 		{
+			anim.SetInteger ("AnimState", 11);
 			rb.velocity = Vector2.up * jumpVelocity;
 			jumps--;
 		}
@@ -214,6 +233,8 @@ public class Player_Controller : MonoBehaviour
 		if (Input.GetKeyDown (KeyCode.E) && canDash && onGround)
 		{
 			//anim.SetInteger ("AttackState", 13);
+			anim.SetInteger ("AnimState", 3);
+
 			StartCoroutine (Dash (dashDuration));
 
 		}
@@ -223,9 +244,9 @@ public class Player_Controller : MonoBehaviour
 	{
 		if (Input.GetKey (KeyCode.T) && (energy.CurrentValue == energy.MaxValue))
 		{
-			anim.SetInteger ("AnimState", 4);
+			StartCoroutine (ultraTimer ());
+
 			ultraTrail.enabled = true;
-			//StartCoroutine (Moonwalk ());
 			isUltra = true;
 
 			sr.color = Color.magenta;
@@ -270,9 +291,18 @@ public class Player_Controller : MonoBehaviour
 
 	}
 
+	private IEnumerator ultraTimer()
+	{
+		anim.SetInteger ("AnimState", 4);
+		yield return new WaitForSeconds (0.666666f);
+		anim.SetInteger ("AnimState", 0);
+
+		yield return 0;
+	}
+
 	private IEnumerator Dash (float dashDuration)
 	{
-		anim.SetInteger ("AnimState", 3);
+		isSliding = true;
 		slideHitbox.enabled = true;
 		playerHitbox.enabled = false;
 
@@ -314,6 +344,7 @@ public class Player_Controller : MonoBehaviour
 		slideHitbox.enabled = false;
 
 		Time.timeScale = 1;
+		isSliding = false;
 		yield return new WaitForSeconds (dashCD); //Cooldown time for being able to boost again
 
 		canDash = true; //set back to true so that we can boost again.
@@ -345,6 +376,8 @@ public class Player_Controller : MonoBehaviour
 			jumps = numJumps;
 			onGround = true;
 
+			if (anim.GetInteger ("AnimState") == 11)
+				anim.SetInteger ("AnimState", 0);
 		}
 
 		if (collisionInfo.gameObject.tag == "Wall")
@@ -353,9 +386,9 @@ public class Player_Controller : MonoBehaviour
 			float temp = 0;
 
 			jumpScript.enabled = false;
-			rb.velocity = new Vector2 (0, 0);
+			//rb.velocity = new Vector2 (0, 0);
 			rb.gravityScale = wallSlideSpeed;
-			Debug.Log ("on Wall");
+			//Debug.Log ("on Wall");
 
 		}
 	}
