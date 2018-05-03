@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class menuController : MonoBehaviour {
 
@@ -26,14 +27,14 @@ public class menuController : MonoBehaviour {
 	void Update () {
 		if (inMenu) {
 			//*********hold R1 to see credits
-			if (Input.GetKey (KeyCode.JoystickButton5)) {
-				creditsSpeed = (Mathf.Abs (creditsOnScreen.x - credits.transform.position.x)) * 2.75f + 5f;
+			if (Input.GetKey (KeyCode.P)) {
+				creditsSpeed = (Mathf.Abs (creditsOnScreen.x - credits.transform.position.x)) * 2.75f + 7f;
 
 				if (credits.transform.position.x > creditsOnScreen.x) { 
 					credits.transform.position -= Vector3.right * creditsSpeed * Time.deltaTime;
 				}
 			} else {
-				creditsSpeed = (Mathf.Abs (creditsOffScreen.x - credits.transform.position.x)) * 2.75f + 5f;
+				creditsSpeed = (Mathf.Abs (creditsOffScreen.x - credits.transform.position.x)) * 2.75f + 7f;
 
 				if (credits.transform.position.x < creditsOffScreen.x) { 
 					credits.transform.position += Vector3.right * creditsSpeed * Time.deltaTime;
@@ -42,8 +43,8 @@ public class menuController : MonoBehaviour {
 			}
 
 			//*********press X to start the game
-			if (Input.GetKeyDown (KeyCode.JoystickButton0)) {
-				inMenu = false;
+			if (Input.GetKeyDown (KeyCode.X)) {
+				SceneManager.LoadScene ("Main");
 			}
 		}
 	}
